@@ -146,8 +146,8 @@ function print_contents()
     // --------------------------------------------------------------------- //
     $dir_cert          = $CERT_DATA."/".$_POST['certificateName'];
     $file_openssl_conf = $dir_cert."/".$_POST['certificateName']."_openssl.conf";
-    $file_cert_encpw   = $dir_cert."/".$_POST['certificateName']."_encpw.txt";
-    $file_root_encpw   = $dir_cert."/".$_POST['certificateName']."_encpw2.txt";
+    $file_cert_encpw   = $dir_cert."/encpw.txt";
+    $file_root_encpw   = $dir_cert."/_encpw2.txt";
     $file_cert_ref     = $dir_cert."/".$_POST['certificateName'].".json";
 
     // --------------------------------------------------------------------- //
@@ -185,7 +185,7 @@ function print_contents()
     if ($_POST['IP_3'] != '')
         $ip3 = 'IP.3    = '.$_POST['IP_3'];
 
-    if ($dns1 == "" || $ip1 == "")
+    if ($dns1 == "" && $ip1 == "")
         $altNames = "";
 
 
@@ -305,7 +305,6 @@ $ip3,
     // --------------------------------------------------------------------- //
     // 인증서 생성
     // --------------------------------------------------------------------- //
-    // openssl x509 -req -days 3650 -extensions v3_user -in 190_20_20_4_dev.csr -CA rootCa.crt -CAcreateserial -CAkey rootCa.key -out 190_20_20_4_dev.crt -extfile host_openssl.conf
     $x509_exec = $OPENSSL_EXEC.' x509 -req -days '.$certmgr_ref['days'].' -extensions v3_user '.
         '-in "'.$dir_cert.'/'.$certmgr_ref['csrFile'].'" '.
         '-CA "'.$CERT_DATA.'/rootca/'.$rootCaInfo['crtFile'].'" -CAcreateserial '.
@@ -313,9 +312,15 @@ $ip3,
         '-passin "file:'.$file_root_encpw.'" '.
         '-out "'.$dir_cert.'/'.$certmgr_ref['crtFile'].'" '.
         '-extfile "'.$file_openssl_conf.'"';
+
+    $x509_cmd = $dir_cert."/openssl_x509.cmd";
+    file_put_contents($x509_cmd, $x509_exec);
+    //exec('/bin/sh '.$x509_cmd.' 2>&1', $x509_out, $result);
+
     exec($x509_exec.' 2>&1', $x509_out, $result);
     if ($result != 0)
     {
+
         @unlink($file_cert_encpw);
         @unlink($file_root_encpw);
         error_exit_json("<b>인증서 생성 오류입니다. (루트인증서 비밀번호 확인하세요.)</b>\n".
