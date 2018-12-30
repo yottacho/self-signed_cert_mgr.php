@@ -282,6 +282,10 @@ $ip3,
     {
         @unlink($file_cert_encpw);
         @unlink($file_root_encpw);
+
+        $rsa_log_file = $dir_cert."/openssl_genrsa.log";
+        file_put_contents($rsa_log_file, $genrsa_exec."\n\n".implode("\n", $genrsa_out));
+
         error_exit_json("<b>개인(비밀)키 생성 오류입니다.</b>\n".
             "<p>".$genrsa_exec."</p>\n<p>".implode("<br>\n", $genrsa_out)."</p>");
     }
@@ -298,6 +302,10 @@ $ip3,
     {
         @unlink($file_cert_encpw);
         @unlink($file_root_encpw);
+
+        $csr_log_file = $dir_cert."/openssl_req.log";
+        file_put_contents($csr_log_file, $csr_req_exec."\n\n".implode("\n", $csr_req_out));
+
         error_exit_json("<b>인증요청서(CSR) 생성 오류입니다.</b>\n".
             "<p>".$csr_req_exec."</p>\n<p>".implode("<br>\n", $csr_req_out)."</p>");
     }
@@ -313,16 +321,18 @@ $ip3,
         '-out "'.$dir_cert.'/'.$certmgr_ref['crtFile'].'" '.
         '-extfile "'.$file_openssl_conf.'"';
 
-    $x509_cmd = $dir_cert."/openssl_x509.cmd";
-    file_put_contents($x509_cmd, $x509_exec);
-    //exec('/bin/sh '.$x509_cmd.' 2>&1', $x509_out, $result);
-
     exec($x509_exec.' 2>&1', $x509_out, $result);
     if ($result != 0)
     {
-
+        // - 루트인증서 비밀번호 틀리면 오류
+        // - rootca 폴더에 웹서버ID가 쓰기권한이 없어도 오류가 발생
+        // - 그밖에: SELinux 셋팅 등
         @unlink($file_cert_encpw);
         @unlink($file_root_encpw);
+
+        $x509_log_file = $dir_cert."/openssl_x509.log";
+        file_put_contents($x509_cmd_file, $x509_exec."\n\n".implode("\n", $x509_out));
+
         error_exit_json("<b>인증서 생성 오류입니다. (루트인증서 비밀번호 확인하세요.)</b>\n".
             "<p>".$x509_exec."</p>\n<p>".implode("<br>\n", $x509_out)."</p>");
     }

@@ -4,7 +4,7 @@
 /****************************************************************************/
 $OPENSSL_EXEC = "/usr/bin/openssl";
 // 웹에서 접근이 불가능한 디렉터리를 지정
-$CERT_DATA = "/usr/share/nginx/html/certmgr/cert_data";
+$CERT_DATA = "/volume1/homes/admin/CA_local";
 $TIMEZONE = "Asia/Seoul";
 
 /****************************************************************************/
