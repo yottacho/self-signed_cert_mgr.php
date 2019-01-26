@@ -351,6 +351,7 @@ $ip3,
         '-name "'.$certmgr_ref['certificateName'].'" '.
         '-out "'.$dir_cert.'/'.$certmgr_ref['pfxFile'].'" '.
         '-certfile "'.$CERT_DATA.'/rootca/'.$rootCaInfo['crtFile'].'"';
+    // -CAfile caChain.pem -chain
 
     exec($pfx_exec.' 2>&1', $pfx_out, $result);
     if ($result != 0)

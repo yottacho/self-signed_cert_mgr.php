@@ -55,7 +55,7 @@ require_once("req_login.php");
 /****************************************************************************/
 if ($REQUEST_ACTION == "home")
 {
-    require_once("req_home.php");
+    require_once("action/home.php");
 }
 else if ($REQUEST_ACTION == "logout")
 {
@@ -74,10 +74,9 @@ else
 {
     // 오토액션매핑
     $script_root_dir = dirname($_SERVER["SCRIPT_FILENAME"]);
-    $script_file = $REQUEST_ACTION;
 
     // 스크립트 파일명 검증(영문 소문자, 숫자, 언더바만 허용)
-    if (preg_match("/^[a-z0-9_]+$/", $script_file) != 1)
+    if (preg_match("/^[a-z0-9_]+$/", $REQUEST_ACTION) != 1)
     {
         $ERROR_TITLE = "액션 오류";
         $ERROR_MESSAGE = "액션에 허용되지 않은 문자가 있습니다";
@@ -85,7 +84,25 @@ else
     }
     else
     {
-        $script_pathname = $script_root_dir . "/req_" . $script_file . ".php";
+        $category = "";
+        $action = "";
+        $sep_idx = strpos($REQUEST_ACTION, "_");
+
+        // 첫번째 '_'가 있으면 _ 앞은 카테고리로, 뒤는 액션으로 분리한다.
+        if ($sep_idx !== false)
+        {
+            $category = substr($REQUEST_ACTION, 0, $sep_idx);
+            $action = substr($REQUEST_ACTION, $sep_idx + 1);
+        }
+        // '_'가 없으면 액션은 카테고리명으로 셋팅
+        else
+        {
+            $category = $REQUEST_ACTION;
+            $action = "index";
+        }
+
+        $script_pathname = $script_root_dir . "/action/" . $category . "/" . $action . ".php";
+
         if (file_exists($script_pathname))
         {
             require_once($script_pathname);

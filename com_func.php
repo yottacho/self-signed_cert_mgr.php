@@ -14,7 +14,6 @@ function error_exit_json($error_msg, $http_code = 500, $form_id = array())
         if ($http_code === null || $http_code == 0)
             $http_code = 500;
 
-        // 일부 nginx 서버에서는 이 명령이 안 먹고 405 Not Allowed 로 리턴함..   추후 원인 파악해 볼 것
         header("HTTP/1.0 ".$http_code." Internal Server Error", true, $http_code);
     }
 
