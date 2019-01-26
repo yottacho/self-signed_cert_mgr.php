@@ -147,6 +147,7 @@ function print_contents()
     $dir_cert          = $CERT_DATA."/".$_POST['certificateName'];
     $file_openssl_conf = $dir_cert."/".$_POST['certificateName']."_openssl.conf";
     $file_cert_encpw   = $dir_cert."/encpw.txt";
+    $file_cert_encpw2  = $dir_cert."/encpw2.txt";
     $file_root_encpw   = $dir_cert."/_encpw2.txt";
     $file_cert_ref     = $dir_cert."/".$_POST['certificateName'].".json";
 
@@ -157,6 +158,7 @@ function print_contents()
     {
         if (!mkdir($dir_cert))
         {
+            log_write("Can't create directory", "ERROR");
             error_exit_json("디렉터리를 생성할 수 없습니다.");
         }
     }
@@ -268,8 +270,8 @@ $ip3,
 ,'privKeyFile'            => $_POST['certificateName'].'.key'
 ,'csrFile'                => $_POST['certificateName'].'.csr'
 ,'crtFile'                => $_POST['certificateName'].'.crt'
+,'pfxFile'                => $_POST['certificateName'].'.pfx'
     );
-    file_put_contents($file_cert_ref, json_encode($certmgr_ref, JSON_PRETTY_PRINT));
 
     // --------------------------------------------------------------------- //
     // Private key 생성 (genrsa)
@@ -331,15 +333,45 @@ $ip3,
         @unlink($file_root_encpw);
 
         $x509_log_file = $dir_cert."/openssl_x509.log";
-        file_put_contents($x509_cmd_file, $x509_exec."\n\n".implode("\n", $x509_out));
+        file_put_contents($x509_log_file, $x509_exec."\n\n".implode("\n", $x509_out));
 
         error_exit_json("<b>인증서 생성 오류입니다. (루트인증서 비밀번호 확인하세요.)</b>\n".
             "<p>".$x509_exec."</p>\n<p>".implode("<br>\n", $x509_out)."</p>");
     }
 
+    // --------------------------------------------------------------------- //
+    // pfx 생성 (인증서 + 개인키) (Windwos Server 또는 java)
+    // --------------------------------------------------------------------- //
+    file_put_contents($file_cert_encpw2, $_POST['hostCertPassword']);
+    $pfx_exec = $OPENSSL_EXEC.' pkcs12 -export '.
+        '-in "'.$dir_cert.'/'.$certmgr_ref['crtFile'].'" '.
+        '-inkey "'.$dir_cert.'/'.$certmgr_ref['privKeyFile'].'" '.
+        '-passin "file:'.$file_cert_encpw.'" '.
+        '-passout "file:'.$file_cert_encpw2.'" '.
+        '-name "'.$certmgr_ref['certificateName'].'" '.
+        '-out "'.$dir_cert.'/'.$certmgr_ref['pfxFile'].'" '.
+        '-certfile "'.$CERT_DATA.'/rootca/'.$rootCaInfo['crtFile'].'"';
+
+    exec($pfx_exec.' 2>&1', $pfx_out, $result);
+    if ($result != 0)
+    {
+        @unlink($file_cert_encpw);
+        @unlink($file_cert_encpw2);
+        @unlink($file_root_encpw);
+
+        $pfx_log_file = $dir_cert."/openssl_pfx.log";
+        file_put_contents($pfx_log_file, $pfx_exec."\n\n".implode("\n", $pfx_out));
+
+        error_exit_json("<b>pfx 인증서 생성 오류입니다.</b>\n".
+            "<p>".$pfx_exec."</p>\n<p>".implode("<br>\n", $pfx_out)."</p>");
+    }
+
     @unlink($file_cert_encpw);
+    @unlink($file_cert_encpw2);
     @unlink($file_root_encpw);
 
+    // 완료되면 참조파일 저장
+    file_put_contents($file_cert_ref, json_encode($certmgr_ref, JSON_PRETTY_PRINT));
 
     // --------------------------------------------------------------------- //
     // 응답 데이터 생성

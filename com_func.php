@@ -112,4 +112,26 @@ function input_value_check($value, $matchPattern = "", $minLength = 0, $maxLengt
     return true;
 }
 
+
+function log_write($message, $level="INFO", $file=__FILE__, $func=__FUNCTION__, $line=__LINE__)
+{
+    global $_SESSION;
+    global $CERT_DATA;
+
+    $logfnm = $CERT_DATA.date('Ymd').".log";
+    //var_dump(debug_backtrace());
+
+    $jlog = array(
+        'timestamp' => date('c')
+        ,'user'     => $_SESSION['user_name'].'('.$_SESSION['user_id'].')'
+        ,'file'     => $file
+        ,'function' => $func
+        ,'$line'    => $line
+        ,'level'    => $level
+        ,'message'  => $message
+    );
+
+    file_put_contents(logfnm, json_encode($jlog), FILE_APPEND | LOCK_EX);
+}
+
 ?>
