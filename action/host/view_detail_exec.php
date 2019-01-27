@@ -1,4 +1,4 @@
-<?
+<?php
 /****************************************************************************/
 /* 호스트 인증서 검증API                                                    */
 /****************************************************************************/
@@ -21,16 +21,6 @@ function print_contents()
         error_exit_json("인증서를 찾을 수 없습니다.");
     }
 
-    $error_form = array();
-    if (!input_value_check($_POST['cert_pw'], '^[\\x20-\\x7E]*$', 1, 32))
-    {
-        $error_form['cert_pw'] = "인증서 비밀번호를 입력하세요.";
-    }
-    if (count($error_form) > 0)
-    {
-        error_exit_json("입력한 항목에 오류가 있습니다.", null, $error_form);
-    }
-
     // --------------------------------------------------------------------- //
     // 변수 생성
     // --------------------------------------------------------------------- //
@@ -44,7 +34,7 @@ function print_contents()
     $file_cert_encpw   = $dir_cert."/".$hostCertInfo['certificateName']."_encpw.txt";
 
     // password file 생성
-    file_put_contents($file_cert_encpw, $_POST['cert_pw']);
+    file_put_contents($file_cert_encpw, get_ca_master_password());
     //@unlink($file_cert_encpw);
 
     // --------------------------------------------------------------------- //
@@ -57,7 +47,7 @@ function print_contents()
     if ($result != 0)
     {
         @unlink($file_cert_encpw);
-        error_exit_json("<b>개인(비밀)키를 검증할 수 없습니다.</b>\n".
+        error_exit_json("<b>키를 검증할 수 없습니다.</b>\n".
             "<p>".$rsa_exec."</p>\n<p>".implode("<br>\n", $rsa_out)."</p>");
     }
 
@@ -82,7 +72,7 @@ function print_contents()
     if ($result != 0)
     {
         @unlink($file_cert_encpw);
-        error_exit_json("<b>호스트 인증서를 검증할 수 없습니다.</b>\n".
+        error_exit_json("<b>인증서를 검증할 수 없습니다.</b>\n".
             "<p>".$x509_exec."</p>\n<p>".implode("<br>\n", $x509_out)."</p>");
     }
 

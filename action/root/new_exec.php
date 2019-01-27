@@ -1,4 +1,4 @@
-<?
+<?php
 /****************************************************************************/
 /* 호스트 인증서 생성API                                                    */
 /****************************************************************************/
@@ -45,6 +45,9 @@ function print_contents()
     {
         error_exit_json("루트 인증서가 이미 생성되어 있습니다.");
     }
+
+    // 다른 오류가 발생해서 생성 도중에 멈춘경우 clear
+    clean_cert("rootca");
 
     // --------------------------------------------------------------------- //
     // 입력항목 검증
@@ -104,48 +107,45 @@ function print_contents()
     // --------------------------------------------------------------------- //
     // rootca 디렉터리 생성
     // --------------------------------------------------------------------- //
-    if (!is_dir($dir_rootca))
+    if (!is_dir($dir_rootca) && !mkdir($dir_rootca))
     {
-        if (!mkdir($dir_rootca))
-        {
-            error_exit_json("Can't create directory");
-        }
+        error_exit_json("Can't create directory");
     }
 
     // --------------------------------------------------------------------- //
     // 인증서 발급용 openssl config 생성
     // --------------------------------------------------------------------- //
     $openssl_rootca_config = array(
-'[ req ]',
-'default_bits            = 2048',
-'default_md              = sha1',
-'default_keyfile         = '.$_POST['certificateName'].'RootCa.key',
-'distinguished_name      = req_distinguished_name',
-'extensions              = v3_ca',
-'req_extensions          = v3_ca',
-'',
-'[ v3_ca ]',
-'basicConstraints       = critical, CA:TRUE, pathlen:0',
-'subjectKeyIdentifier   = hash',
-'keyUsage               = keyCertSign, cRLSign',
-'nsCertType             = sslCA, emailCA, objCA',
-'',
-'[req_distinguished_name ]',
-'countryName                     = Country Name (2 letter code)',
-'countryName_default             = '.$_POST['countryName'],
-'countryName_min                 = 2',
-'countryName_max                 = 2',
-'',
-'organizationName                = Organization Name (eg, company)',
-'organizationName_default        = '.$_POST['organizationName'],
-'',
-'organizationalUnitName          = Organizational Unit Name (eg, section)',
-'organizationalUnitName_default  = '.$_POST['organizationalUnitName'],
-'',
-'commonName                      = Common Name (eg, your name or your server\'s hostname)',
-'commonName_default              = '.$_POST['commonName'],
-'commonName_max                  = 64',
-''
+        '[ req ]',
+        'default_bits            = 2048',
+        'default_md              = sha1',
+        'default_keyfile         = '.$_POST['certificateName'].'RootCa.key',
+        'distinguished_name      = req_distinguished_name',
+        'extensions              = v3_ca',
+        'req_extensions          = v3_ca',
+        '',
+        '[ v3_ca ]',
+        'basicConstraints       = critical, CA:TRUE, pathlen:0',
+        'subjectKeyIdentifier   = hash',
+        'keyUsage               = keyCertSign, cRLSign',
+        'nsCertType             = sslCA, emailCA, objCA',
+        '',
+        '[req_distinguished_name ]',
+        'countryName                     = Country Name (2 letter code)',
+        'countryName_default             = '.$_POST['countryName'],
+        'countryName_min                 = 2',
+        'countryName_max                 = 2',
+        '',
+        'organizationName                = Organization Name (eg, company)',
+        'organizationName_default        = '.$_POST['organizationName'],
+        '',
+        'organizationalUnitName          = Organizational Unit Name (eg, section)',
+        'organizationalUnitName_default  = '.$_POST['organizationalUnitName'],
+        '',
+        'commonName                      = Common Name (eg, your name or your server\'s hostname)',
+        'commonName_default              = '.$_POST['commonName'],
+        'commonName_max                  = 64',
+        ''
     );
     file_put_contents($file_openssl_conf, implode("\n", $openssl_rootca_config));
 
@@ -153,7 +153,9 @@ function print_contents()
     file_put_contents($file_rootca_encpw, $_POST['rootCertPassword']);
     //@unlink($file_rootca_encpw);
 
-    // 참조 파일 생성
+    // --------------------------------------------------------------------- //
+    // 참조 파일 정보 생성
+    // --------------------------------------------------------------------- //
     $dt_calc = date_create();
     $dt_calc->add(date_interval_create_from_date_string($_POST['days']." days"));
 
@@ -161,38 +163,36 @@ function print_contents()
     $endDate   = $dt_calc->format("Y/m/d H:i:sO");
 
     $certmgr_ref = array(
- 'certificateName'        => $_POST['certificateName'].'RootCa'
-,'countryName'            => $_POST['countryName']
-,'organizationName'       => $_POST['organizationName']
-,'organizationalUnitName' => $_POST['organizationalUnitName']
-,'commonName'             => $_POST['commonName']
-,'days'                   => ($_POST['days'] * 1)
-,'startDateLocal'         => $startDate
-,'endDateLocal'           => $endDate
-,'serial'                 => $_POST['serial']
-,'user'                   => $_SESSION['user_name'].'('.$_SESSION['user_id'].')'
-,'privKeyFile'            => $_POST['certificateName'].'RootCa.key'
-,'csrFile'                => $_POST['certificateName'].'RootCa.csr'
-,'crtFile'                => $_POST['certificateName'].'RootCa.crt'
+         'certificateName'        => $_POST['certificateName'].'RootCa'
+        ,'countryName'            => $_POST['countryName']
+        ,'organizationName'       => $_POST['organizationName']
+        ,'organizationalUnitName' => $_POST['organizationalUnitName']
+        ,'commonName'             => $_POST['commonName']
+        ,'days'                   => ($_POST['days'] * 1)
+        ,'startDateLocal'         => $startDate
+        ,'endDateLocal'           => $endDate
+        ,'serial'                 => $_POST['serial']
+        ,'user'                   => $_SESSION['user_name'].'('.$_SESSION['user_id'].')'
+        ,'privKeyFile'            => $_POST['certificateName'].'RootCa.key'
+        ,'csrFile'                => $_POST['certificateName'].'RootCa.csr'
+        ,'crtFile'                => $_POST['certificateName'].'RootCa.crt'
     );
-    file_put_contents($file_rootca_ref, json_encode($certmgr_ref, JSON_PRETTY_PRINT));
 
     // --------------------------------------------------------------------- //
-    // Private key 생성 (genrsa)
+    // Keypair 생성 (genrsa)
     // --------------------------------------------------------------------- //
-    $genrsa_out = array();
-    //if (!file_exists($dir_rootca.'/'.$certmgr_ref['privKeyFile']))
+    $genrsa_exec = $OPENSSL_EXEC.' genrsa -aes256 -passout "file:'.$file_rootca_encpw.'" '.
+        '-out "'.$dir_rootca.'/'.$certmgr_ref['privKeyFile'].'" 2048';
+
+    exec($genrsa_exec.' 2>&1', $genrsa_out, $result);
+    if ($result != 0)
     {
-        $genrsa_exec = $OPENSSL_EXEC.' genrsa -aes256 -passout "file:'.$file_rootca_encpw.'" '.
-            '-out "'.$dir_rootca.'/'.$certmgr_ref['privKeyFile'].'" 2048';
+        // genrsa 명령이 뭔가 잘못돼도 result=0 인 경우가 있고, 이 경우 CSR 생성단계에서 오류 발생
+        @unlink($file_rootca_encpw);
 
-        exec($genrsa_exec.' 2>&1', $genrsa_out, $result);
-        if ($result != 0)
-        {
-            @unlink($file_rootca_encpw);
-            error_exit_json("<b>Can't create private key</b>\n".
-                "<p>".$genrsa_exec."</p>\n<p>".implode("<br>\n", $genrsa_out)."</p>");
-        }
+        log_write("RootCA: KEY: ".$genrsa_exec, "ERROR", $genrsa_out);
+        error_exit_json("<b>Can't create keypair</b>\n".
+            "<p>".$genrsa_exec."</p>\n<p>".implode("<br>\n", $genrsa_out)."</p>");
     }
 
     // --------------------------------------------------------------------- //
@@ -206,12 +206,14 @@ function print_contents()
     if ($result != 0)
     {
         @unlink($file_rootca_encpw);
+
+        log_write("RootCA: CSR: ".$csr_req_exec, "ERROR", $csr_req_out);
         error_exit_json("<b>Can't create csr(Certificate Signing Request) file!</b>\n".
             "<p>".$csr_req_exec."</p>\n<p>".implode("<br>\n", $csr_req_out)."</p>");
     }
 
     // --------------------------------------------------------------------- //
-    // 인증서 생성
+    // x509 인증서 생성
     // --------------------------------------------------------------------- //
     $x509_exec = $OPENSSL_EXEC.' x509 -req -days '.$certmgr_ref['days'].' -extensions v3_ca '.
         '-set_serial '.$certmgr_ref['serial'].' -in "'.$dir_rootca.'/'.$certmgr_ref['csrFile'].'" '.
@@ -219,15 +221,27 @@ function print_contents()
         '-passin "file:'.$file_rootca_encpw.'" '.
         '-out "'.$dir_rootca.'/'.$certmgr_ref['crtFile'].'" '.
         '-extfile "'.$file_openssl_conf.'"';
+
     exec($x509_exec.' 2>&1', $x509_out, $result);
     if ($result != 0)
     {
         @unlink($file_rootca_encpw);
+
+        log_write("RootCA: x509: ".$x509_exec, "ERROR", $x509_out);
         error_exit_json("<b>Can't create x509 certificate file!</b>\n".
             "<p>".$x509_exec."</p>\n<p>".implode("<br>\n", $x509_out)."</p>");
     }
 
+    // 루트패스워드 임시파일 삭제
     @unlink($file_rootca_encpw);
+
+    // 마스터 패스워드 저장
+    set_ca_master_password($_POST['rootCertPassword'], "rootca_pw");
+
+    // 모든게 완료되면 참조파일 기록
+    file_put_contents($file_rootca_ref, json_encode($certmgr_ref, JSON_PRETTY_PRINT));
+
+    log_write("RootCA: ".$certmgr_ref['certificateName']." created. = Success");
 
     // --------------------------------------------------------------------- //
     // 응답 데이터 생성

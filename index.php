@@ -1,4 +1,4 @@
-<?
+<?php
 require_once("env.php");
 
 /****************************************************************************/
@@ -53,9 +53,9 @@ require_once("req_login.php");
 /****************************************************************************/
 /* 액션 핸들러                                                              */
 /****************************************************************************/
-if ($REQUEST_ACTION == "home")
+if ($REQUEST_ACTION == "home" || $REQUEST_ACTION == "dn")
 {
-    require_once("action/home.php");
+    require_once("action/".$REQUEST_ACTION.".php");
 }
 else if ($REQUEST_ACTION == "logout")
 {
@@ -289,19 +289,19 @@ foreach ($sidebar_treemenu as $menu_name)
           </a>
           <ul class="treeview-menu">
             <li id="id_menu_host"><a href="<?=$_SERVER['SCRIPT_NAME']?>?a=host"><i class="fa fa-circle-o"></i> 호스트 인증서 목록</a></li>
-<?
+<?php
 if ($_SESSION['user_role'] == "host_manager")
 {
 ?>
 
             <li id="id_menu_host_new"><a href="<?=$_SERVER['SCRIPT_NAME']?>?a=host_new"><i class="fa fa-circle-o"></i> 호스트 인증서 생성</a></li>
-<?
+<?php
 }
 ?>
           </ul>
         </li>
 
-<?
+<?php
 if ($_SESSION['user_role'] == "admin")
 {
 ?>
@@ -322,7 +322,7 @@ if ($_SESSION['user_role'] == "admin")
           </ul>
         </li>
 
-<?
+<?php
 }
 
 if ($_SESSION['user_role'] == "admin")
@@ -340,7 +340,7 @@ if ($_SESSION['user_role'] == "admin")
             <li id="id_menu_user_new"><a href="<?=$_SERVER['SCRIPT_NAME']?>?a=user_new"><i class="fa fa-circle-o"></i> 사용자 등록</a></li>
           </ul>
         </li>
-<?
+<?php
 }
 ?>
 
@@ -371,7 +371,7 @@ if ($_SESSION['user_role'] == "admin")
     <!-- Main content -->
     <section class="content">
       <!-- 여기에 내용 삽입 -->
-      <?print_contents()?>
+      <?php print_contents(); ?>
       <!-- 여기에 내용 삽입(끝) -->
     </section>
     <!-- /.content -->
@@ -412,7 +412,7 @@ if ($_SESSION['user_role'] == "admin")
   })
 </script>
 
-<?
+<?php
 if (function_exists("footer_scripts"))
 {
     echo footer_scripts();

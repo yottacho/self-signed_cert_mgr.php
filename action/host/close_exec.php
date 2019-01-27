@@ -1,4 +1,4 @@
-<?
+<?php
 /****************************************************************************/
 /* 호스트 인증서 폐기API                                                    */
 /****************************************************************************/
@@ -12,6 +12,8 @@ function print_contents()
 {
     global $_POST, $_SESSION;
     global $CERT_DATA, $USER_STORE;
+
+    $output = array();
 
     // role 검증
     if ($_SESSION['user_role'] != "host_manager")
@@ -58,49 +60,63 @@ function print_contents()
         error_exit_json("입력한 항목에 오류가 있습니다.", null, $error_form);
     }
 
-    // --------------------------------------------------------------------- //
-    // 변수 생성
-    // --------------------------------------------------------------------- //
-    $dir_cert          = $CERT_DATA."/".$hostCertInfo['certificateName'];
-
-    // --------------------------------------------------------------------- //
-    // 정보파일 갱신
-    // --------------------------------------------------------------------- //
-    $closeDate = date("Y/m/d H:i:sO");
-
-    $hostCertInfo['closed'] = 'Y';
-    $hostCertInfo['closeDateLocal'] = $closeDate;
-    $hostCertInfo['closeUser'] = $_SESSION['user_name'].'('.$_SESSION['user_id'].')';
-
-    file_put_contents($dir_cert.'/'.$hostCertInfo['certificateName'].".json", json_encode($hostCertInfo, JSON_PRETTY_PRINT));
-
-    // --------------------------------------------------------------------- //
-    // 해지처리
-    // --------------------------------------------------------------------- //
-    $dir_cert_new = $dir_cert.".closed";
-    if (@is_dir($dir_cert_new))
+    if ($hostCertInfo['closed'] == 'Y')
     {
-        // remove all files
-        if ($dirHandle = opendir($dir_cert_new))
-        {
-            while (($dirName = readdir($dirHandle)) !== false)
-            {
-                @unlink($dir_cert_new."/".$dirName);
-            }
-        }
-        closedir($dirHandle);
+        // 이미 폐기한 인증서는 삭제
+        clean_cert($certName, true);
 
-        @rmdir($dir_cert_new);
+        log_write($hostCertInfo['certificateName'].": Certificate deleted. = Success");
+
+        // --------------------------------------------------------------------- //
+        // 응답 데이터 생성
+        // --------------------------------------------------------------------- //
+        $output['result'] = 'Deleted';
     }
-    @rename($dir_cert, $dir_cert_new); 
+    else
+    {
+        // --------------------------------------------------------------------- //
+        // 변수 생성
+        // --------------------------------------------------------------------- //
+        $dir_cert          = $CERT_DATA."/".$hostCertInfo['certificateName'];
 
-    // --------------------------------------------------------------------- //
-    // 응답 데이터 생성
-    // --------------------------------------------------------------------- //
+        // --------------------------------------------------------------------- //
+        // 정보파일 갱신
+        // --------------------------------------------------------------------- //
+        $closeDate = date("Y/m/d H:i:sO");
 
-    $output = array();
+        $hostCertInfo['closed'] = 'Y';
+        $hostCertInfo['closeDateLocal'] = $closeDate;
+        $hostCertInfo['closeUser'] = $_SESSION['user_name'].'('.$_SESSION['user_id'].')';
 
-    $output['result'] = 'Closed';
+        file_put_contents($dir_cert.'/'.$hostCertInfo['certificateName'].".json", json_encode($hostCertInfo, JSON_PRETTY_PRINT));
+
+        // --------------------------------------------------------------------- //
+        // 해지처리
+        // --------------------------------------------------------------------- //
+        $dir_cert_new = $dir_cert.".closed";
+        if (@is_dir($dir_cert_new))
+        {
+            // remove all files
+            if ($dirHandle = opendir($dir_cert_new))
+            {
+                while (($dirName = readdir($dirHandle)) !== false)
+                {
+                    @unlink($dir_cert_new."/".$dirName);
+                }
+            }
+            closedir($dirHandle);
+
+            @rmdir($dir_cert_new);
+        }
+        @rename($dir_cert, $dir_cert_new);
+
+        log_write($hostCertInfo['certificateName'].": Certificate closed. = Success");
+
+        // --------------------------------------------------------------------- //
+        // 응답 데이터 생성
+        // --------------------------------------------------------------------- //
+        $output['result'] = 'Closed';
+    }
 
     echo json_encode($output);
 }

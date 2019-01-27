@@ -1,4 +1,4 @@
-<?
+<?php
 /****************************************************************************/
 /* 루트 인증서 조회 화면                                                    */
 /****************************************************************************/
@@ -20,7 +20,7 @@ function print_contents()
         <h4><i class="icon fa fa-ban"></i> Alert!</h4>
         admin 권한이 필요합니다.
       </div>
-<?
+<?php
         return;
     }
 
@@ -31,7 +31,8 @@ function print_contents()
         <h4><i class="icon fa fa-ban"></i> Alert!</h4>
         발급된 루트 인증서가 없습니다.
       </div>
-<?
+<?php
+        return;
     }
 ?>
 
@@ -87,26 +88,24 @@ function print_contents()
           </div>
 
         </div>
-        <div class="box-footer">
-          <center>
-            <p>루트 인증서는 <code><?=$rootCaInfo['crtFile']?></code> 파일을 웹서버와 PC에 배포합니다.<br>
+        <div class="box-footer text-center">
+            <p>루트 인증서는 Certificate(<code><?=$rootCaInfo['crtFile']?></code>) 파일만 웹서버와 PC에 배포합니다.<br>
             Private Key 파일 또는 CSR파일은 배포하지 않습니다.</p>
-          <div class="btn-group">
+            <div class="btn-group">
 
-            <button id="id_private_key_download" class="btn btn-primary">
-              <i class="fa fa-lock"></i> Private key
-            </button>
+                <button id="id_crt_download" class="btn btn-success">
+                    <i class="fa fa-bolt"></i> Root Certificate
+                </button>
 
-            <button id="id_crt_download" class="btn btn-success">
-              <i class="fa fa-bolt"></i> Root Certificate
-            </button>
+                <button id="id_private_key_download" class="btn btn-primary">
+                  <i class="fa fa-lock"></i> Private key
+                </button>
 
-            <button id="id_csr_download" class="btn btn-default">
-              <i class="fa fa-user-secret"></i> Certificate Signing Request (CSR)
-            </button>
+                <button id="id_csr_download" class="btn btn-default">
+                  <i class="fa fa-user-secret"></i> Certificate Signing Request (CSR)
+                </button>
 
-          </div>
-          </center>
+            </div>
         </div>
       </div>
 
@@ -117,7 +116,7 @@ function print_contents()
     var csrFile = "<?=$rootCaInfo['csrFile']?>";
 </script>
 
-<?
+<?php
 }
 
 function footer_scripts()
@@ -145,6 +144,6 @@ function footer_scripts()
     });
 
 </script>
-<?
+<?php
 }
 ?>

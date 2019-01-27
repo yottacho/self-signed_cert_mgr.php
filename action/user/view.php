@@ -1,4 +1,4 @@
-<?
+<?php
 /****************************************************************************/
 /* 사용자정보 상세보기                                                      */
 /****************************************************************************/
@@ -22,7 +22,7 @@ function print_contents()
         <h4><i class="icon fa fa-ban"></i> Alert!</h4>
         접근할 수 없습니다.
       </div>
-<?
+<?php
             return;
     }
 
@@ -44,7 +44,7 @@ function print_contents()
         <h4><i class="icon fa fa-ban"></i> Alert!</h4>
         다른 사용자 정보는 조회할 수 없습니다.
       </div>
-<?
+<?php
             return;
         }
         // else => 관리자
@@ -75,7 +75,7 @@ function print_contents()
         <h4><i class="icon fa fa-ban"></i> Alert!</h4>
         사용자가 존재하지 않습니다.
       </div>
-<?
+<?php
             return;
     }
 
@@ -137,7 +137,7 @@ function print_contents()
             </div>
           </div>
 
-<?
+<?php
     if ($_SESSION['user_role'] == "admin")
     {
 ?>
@@ -163,7 +163,7 @@ function print_contents()
             </div>
           </div>
 
-<?
+<?php
     }
 ?>
         </form>
@@ -177,7 +177,7 @@ function print_contents()
               <i class="fa fa-save"></i> 저장
             </button>
 
-<?
+<?php
     if ($_SESSION['user_role'] == "admin")
     {
 ?>
@@ -188,7 +188,7 @@ function print_contents()
             <button id="id_back_list" class="btn btn-default">
               <i class="fa fa-arrow-left"></i> 목록
             </button>
-<?
+<?php
     }
 ?>
 
@@ -201,7 +201,7 @@ function print_contents()
     var user_id = "<?=$user['user_id']?>";
 </script>
 
-<?
+<?php
 }
 
 function footer_scripts()
@@ -306,6 +306,6 @@ function footer_scripts()
     });
 
 </script>
-<?
+<?php
 }
 ?>

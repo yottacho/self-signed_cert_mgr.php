@@ -1,4 +1,4 @@
-<?
+<?php
 /****************************************************************************/
 /* 호스트 인증서 생성API                                                    */
 /****************************************************************************/
@@ -32,10 +32,6 @@ function print_contents()
     $_POST['IP_1']
     $_POST['IP_2']
     $_POST['IP_3']
-
-    $_POST['hostCertPassword']              인증서비밀번호
-    $_POST['hostCertPassword2']             인증서비밀번호확인
-    $_POST['rootCertPassword']              루트인증서비밀번호
 */
 
     // --------------------------------------------------------------------- //
@@ -111,22 +107,6 @@ function print_contents()
         $error_form['IP_3'] = "IP format error";
     }
 
-    if (!input_value_check($_POST['hostCertPassword'], '^[\\x20-\\x7E]*$', 1, 32))
-    {
-        $error_form['hostCertPassword'] = "호스트 인증서 비밀번호를 입력하세요.";
-    }
-
-    if (strcmp($_POST['hostCertPassword'], $_POST['hostCertPassword2']) != 0)
-    {
-        $error_form['hostCertPassword'] = "인증서 비밀번호가 일치하지 않습니다.";
-        $error_form['hostCertPassword2'] = "인증서 비밀번호가 일치하지 않습니다.";
-    }
-
-    if (!input_value_check($_POST['rootCertPassword'], '^[\\x20-\\x7E]*$', 1, 32))
-    {
-        $error_form['rootCertPassword'] = "루트 인증서 비밀번호를 입력하세요.";
-    }
-
     // --------------------------------------------------------------------- //
     // 기발급 인증서 확인
     // --------------------------------------------------------------------- //
@@ -147,13 +127,15 @@ function print_contents()
     $dir_cert          = $CERT_DATA."/".$_POST['certificateName'];
     $file_openssl_conf = $dir_cert."/".$_POST['certificateName']."_openssl.conf";
     $file_cert_encpw   = $dir_cert."/encpw.txt";
-    $file_cert_encpw2  = $dir_cert."/encpw2.txt";
     $file_root_encpw   = $dir_cert."/_encpw2.txt";
     $file_cert_ref     = $dir_cert."/".$_POST['certificateName'].".json";
 
     // --------------------------------------------------------------------- //
     // 디렉터리 생성
     // --------------------------------------------------------------------- //
+    // 다른 오류가 발생해서 생성 도중에 멈춘경우 clear
+    clean_cert($_POST['certificateName']);
+
     if (!is_dir($dir_cert))
     {
         if (!mkdir($dir_cert))
@@ -166,54 +148,33 @@ function print_contents()
     // --------------------------------------------------------------------- //
     // 인증서 발급용 openssl config 생성
     // --------------------------------------------------------------------- //
-    $dns1 = "";
-    $dns2 = "";
-    $dns3 = "";
-    $ip1 = "";
-    $ip2 = "";
-    $ip3 = "";
     $altNames = 'subjectAltName          = @alt_names';
-    if ($_POST['DNS_1'] != '')
-        $dns1 = 'DNS.1   = '.$_POST['DNS_1'];
-    if ($_POST['DNS_2'] != '')
-        $dns2 = 'DNS.2   = '.$_POST['DNS_2'];
-    if ($_POST['DNS_3'] != '')
-        $dns3 = 'DNS.3   = '.$_POST['DNS_3'];
-
-    if ($_POST['IP_1'] != '')
-        $ip1 = 'IP.1    = '.$_POST['IP_1'];
-    if ($_POST['IP_2'] != '')
-        $ip2 = 'IP.2    = '.$_POST['IP_2'];
-    if ($_POST['IP_3'] != '')
-        $ip3 = 'IP.3    = '.$_POST['IP_3'];
-
-    if ($dns1 == "" && $ip1 == "")
+    if ($_POST['DNS_1'] == "" && $_POST['IP_1'] == "")
         $altNames = "";
 
-
     $openssl_cert_config = array(
-'[ req ]',
-'default_bits            = 2048',
-'default_md              = sha1',
-'default_keyfile         = '.$CERT_DATA.'/rootca/'.$rootCaInfo['privKeyFile'],
-'distinguished_name      = req_distinguished_name',
-'extensions              = v3_user',
-'',
-'[ v3_user ]',
-'basicConstraints        = CA:FALSE',
-'authorityKeyIdentifier  = keyid, issuer',
-'subjectKeyIdentifier    = hash',
-'keyUsage                = nonRepudiation, digitalSignature, keyEncipherment',
-'extendedKeyUsage        = serverAuth, clientAuth',
-$altNames,
-'',
-'[ alt_names ]',
-$dns1,
-$dns2,
-$dns3,
-$ip1,
-$ip2,
-$ip3,
+        '[ req ]',
+        'default_bits            = 2048',
+        'default_md              = sha1',
+        'default_keyfile         = '.$CERT_DATA.'/rootca/'.$rootCaInfo['privKeyFile'],
+        'distinguished_name      = req_distinguished_name',
+        'extensions              = v3_user',
+        '',
+        '[ v3_user ]',
+        'basicConstraints        = CA:FALSE',
+        'authorityKeyIdentifier  = keyid, issuer',
+        'subjectKeyIdentifier    = hash',
+        'keyUsage                = nonRepudiation, digitalSignature, keyEncipherment',
+        'extendedKeyUsage        = serverAuth, clientAuth',
+        $altNames,
+        '',
+        '[ alt_names ]',
+        ($_POST['DNS_1'] == "" ? "" : 'DNS.1   = '.$_POST['DNS_1']),
+        ($_POST['DNS_2'] == "" ? "" : 'DNS.2   = '.$_POST['DNS_2']),
+        ($_POST['DNS_3'] == "" ? "" : 'DNS.3   = '.$_POST['DNS_3']),
+        ($_POST['IP_1']  == "" ? "" : 'IP.1    = '.$_POST['IP_1']),
+        ($_POST['IP_2']  == "" ? "" : 'IP.2    = '.$_POST['IP_2']),
+        ($_POST['IP_3']  == "" ? "" : 'IP.3    = '.$_POST['IP_3']),
 /*
 'DNS.1   = '.$_POST['DNS_1'],
 'DNS.2   = '.$_POST['DNS_2'],
@@ -240,12 +201,11 @@ $ip3,
 'commonName_max                  = 64',
 ''
     );
-
     file_put_contents($file_openssl_conf, implode("\n", $openssl_cert_config));
 
     // password file 생성
-    file_put_contents($file_cert_encpw, $_POST['hostCertPassword']);
-    file_put_contents($file_root_encpw, $_POST['rootCertPassword']);
+    file_put_contents($file_cert_encpw, get_ca_master_password());
+    file_put_contents($file_root_encpw, get_ca_master_password('rootca_pw'));
     //@unlink($file_cert_encpw);
     //@unlink($file_root_encpw);
 
@@ -257,20 +217,19 @@ $ip3,
     $endDate   = $dt_calc->format("Y/m/d H:i:sO");
 
     $certmgr_ref = array(
- 'certificateName'        => $_POST['certificateName']
-,'countryName'            => $_POST['countryName']
-,'organizationName'       => $_POST['organizationName']
-,'organizationalUnitName' => $_POST['organizationalUnitName']
-,'commonName'             => $_POST['commonName']
-,'days'                   => ($_POST['days'] * 1)
-,'startDateLocal'         => $startDate
-,'endDateLocal'           => $endDate
-,'serial'                 => 0
-,'user'                   => $_SESSION['user_name'].'('.$_SESSION['user_id'].')'
-,'privKeyFile'            => $_POST['certificateName'].'.key'
-,'csrFile'                => $_POST['certificateName'].'.csr'
-,'crtFile'                => $_POST['certificateName'].'.crt'
-,'pfxFile'                => $_POST['certificateName'].'.pfx'
+         'certificateName'        => $_POST['certificateName']
+        ,'countryName'            => $_POST['countryName']
+        ,'organizationName'       => $_POST['organizationName']
+        ,'organizationalUnitName' => $_POST['organizationalUnitName']
+        ,'commonName'             => $_POST['commonName']
+        ,'days'                   => ($_POST['days'] * 1)
+        ,'startDateLocal'         => $startDate
+        ,'endDateLocal'           => $endDate
+        ,'serial'                 => 0
+        ,'user'                   => $_SESSION['user_name'].'('.$_SESSION['user_id'].')'
+        ,'privKeyFile'            => $_POST['certificateName'].'.key'
+        ,'csrFile'                => $_POST['certificateName'].'.csr'
+        ,'crtFile'                => $_POST['certificateName'].'.crt'
     );
 
     // --------------------------------------------------------------------- //
@@ -285,10 +244,8 @@ $ip3,
         @unlink($file_cert_encpw);
         @unlink($file_root_encpw);
 
-        $rsa_log_file = $dir_cert."/openssl_genrsa.log";
-        file_put_contents($rsa_log_file, $genrsa_exec."\n\n".implode("\n", $genrsa_out));
-
-        error_exit_json("<b>개인(비밀)키 생성 오류입니다.</b>\n".
+        log_write($certmgr_ref['certificateName'].": KEY: ".$genrsa_exec, "ERROR", $genrsa_out);
+        error_exit_json("<b>키 생성 오류입니다.</b>\n".
             "<p>".$genrsa_exec."</p>\n<p>".implode("<br>\n", $genrsa_out)."</p>");
     }
 
@@ -305,9 +262,7 @@ $ip3,
         @unlink($file_cert_encpw);
         @unlink($file_root_encpw);
 
-        $csr_log_file = $dir_cert."/openssl_req.log";
-        file_put_contents($csr_log_file, $csr_req_exec."\n\n".implode("\n", $csr_req_out));
-
+        log_write($certmgr_ref['certificateName'].": CSR: ".$csr_req_exec, "ERROR", $csr_req_out);
         error_exit_json("<b>인증요청서(CSR) 생성 오류입니다.</b>\n".
             "<p>".$csr_req_exec."</p>\n<p>".implode("<br>\n", $csr_req_out)."</p>");
     }
@@ -332,47 +287,18 @@ $ip3,
         @unlink($file_cert_encpw);
         @unlink($file_root_encpw);
 
-        $x509_log_file = $dir_cert."/openssl_x509.log";
-        file_put_contents($x509_log_file, $x509_exec."\n\n".implode("\n", $x509_out));
-
-        error_exit_json("<b>인증서 생성 오류입니다. (루트인증서 비밀번호 확인하세요.)</b>\n".
+        log_write($certmgr_ref['certificateName'].": x509: ".$x509_exec, "ERROR", $x509_out);
+        error_exit_json("<b>인증서 생성 오류입니다. </b>\n".
             "<p>".$x509_exec."</p>\n<p>".implode("<br>\n", $x509_out)."</p>");
     }
 
-    // --------------------------------------------------------------------- //
-    // pfx 생성 (인증서 + 개인키) (Windwos Server 또는 java)
-    // --------------------------------------------------------------------- //
-    file_put_contents($file_cert_encpw2, $_POST['hostCertPassword']);
-    $pfx_exec = $OPENSSL_EXEC.' pkcs12 -export '.
-        '-in "'.$dir_cert.'/'.$certmgr_ref['crtFile'].'" '.
-        '-inkey "'.$dir_cert.'/'.$certmgr_ref['privKeyFile'].'" '.
-        '-passin "file:'.$file_cert_encpw.'" '.
-        '-passout "file:'.$file_cert_encpw2.'" '.
-        '-name "'.$certmgr_ref['certificateName'].'" '.
-        '-out "'.$dir_cert.'/'.$certmgr_ref['pfxFile'].'" '.
-        '-certfile "'.$CERT_DATA.'/rootca/'.$rootCaInfo['crtFile'].'"';
-    // -CAfile caChain.pem -chain
-
-    exec($pfx_exec.' 2>&1', $pfx_out, $result);
-    if ($result != 0)
-    {
-        @unlink($file_cert_encpw);
-        @unlink($file_cert_encpw2);
-        @unlink($file_root_encpw);
-
-        $pfx_log_file = $dir_cert."/openssl_pfx.log";
-        file_put_contents($pfx_log_file, $pfx_exec."\n\n".implode("\n", $pfx_out));
-
-        error_exit_json("<b>pfx 인증서 생성 오류입니다.</b>\n".
-            "<p>".$pfx_exec."</p>\n<p>".implode("<br>\n", $pfx_out)."</p>");
-    }
-
     @unlink($file_cert_encpw);
-    @unlink($file_cert_encpw2);
     @unlink($file_root_encpw);
 
     // 완료되면 참조파일 저장
     file_put_contents($file_cert_ref, json_encode($certmgr_ref, JSON_PRETTY_PRINT));
+
+    log_write($certmgr_ref['certificateName'].": Certificate created. = Success");
 
     // --------------------------------------------------------------------- //
     // 응답 데이터 생성

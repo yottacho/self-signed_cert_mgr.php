@@ -1,4 +1,4 @@
-<?
+<?php
 /****************************************************************************/
 /* 사용자 목록                                                              */
 /****************************************************************************/
@@ -19,7 +19,7 @@ function print_contents()
         <h4><i class="icon fa fa-ban"></i> Alert!</h4>
         admin 권한이 필요합니다.
       </div>
-<?
+<?php
         return;
     }
 
@@ -63,7 +63,7 @@ function print_contents()
         </div>
 
       </div>
-<?
+<?php
 }
 
 function footer_scripts()
@@ -125,6 +125,6 @@ function footer_scripts()
     /* $("#host_cert_load").hide() */
   })
 </script>
-<?
+<?php
 }
 ?>

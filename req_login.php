@@ -1,4 +1,4 @@
-<?
+<?php
 /****************************************************************************/
 /* 로그인 세션 처리                                                         */
 /****************************************************************************/
@@ -269,6 +269,6 @@ function show_login_page($login_error_yn, $msg = "")
 <script src="css/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 </body>
 </html> 
-<?
+<?php
 }   // show_login_page()
 ?>

@@ -1,4 +1,4 @@
-<?
+<?php
 /****************************************************************************/
 /* 신규 사용자 생성 화면                                                    */
 /****************************************************************************/
@@ -19,7 +19,7 @@ function print_contents()
         <h4><i class="icon fa fa-ban"></i> Alert!</h4>
         admin 권한이 필요합니다.
       </div>
-<?
+<?php
         return;
     }
 
@@ -80,7 +80,7 @@ function print_contents()
         </div>
       </div>
 
-<?
+<?php
 }
 
 function footer_scripts()
@@ -128,6 +128,6 @@ function footer_scripts()
     });
 
 </script>
-<?
+<?php
 }
 ?>

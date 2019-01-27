@@ -1,4 +1,4 @@
-<?
+<?php
 /****************************************************************************/
 /* 인증서 다운로드                                                          */
 /****************************************************************************/
@@ -13,20 +13,29 @@ function print_contents()
     global $_REQUEST;
     global $CERT_DATA;
 
-    if (!input_value_check($_REQUEST['n'], '^[a-zA-Z0-9-_]*$', 1))
+    $certName = $_REQUEST['n'];
+
+    if (($hostCertInfo = get_cert($certName)) === false)
     {
-        error_exit_json("인증서 이름 지정 오류입니다.");
+        error_exit_json("Certificate not found.");
     }
 
     if (!input_value_check($_REQUEST['f'], '^[a-zA-Z0-9-_\\.]*$', 1))
     {
-        error_exit_json("인증서 파일명 지정 오류입니다.");
+        error_exit_json("Certificate filename error.");
     }
 
-    $filePathName = $CERT_DATA."/".$_REQUEST['n']."/".$_REQUEST['f'];
+    $filePathName = $CERT_DATA."/".$certName."/".$_REQUEST['f'];
+    $ext = substr($filePathName, -4);
+
+    if ($ext != ".crt" && $ext != ".csr" && $ext != ".key" && $ext != ".pfx")
+    {
+        error_exit_json("Not certificate file.");
+    }
+
     if (!file_exists($filePathName))
     {
-        error_exit_json("인증서 파일을 찾을 수 없습니다.");
+        error_exit_json("Certificate file not found.");
     }
 
     $fileSize = filesize($filePathName);
@@ -42,6 +51,13 @@ function print_contents()
     header("Content-Length: ".$fileSize);
 
     readfile($filePathName);
+
+    // 하드코딩: pfx 파일은 송신 후 삭제
+    if (substr($filePathName, -4) == ".pfx")
+    {
+        @unlink(@$filePathName);
+    }
+
     exit;
 }
 
