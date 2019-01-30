@@ -63,7 +63,8 @@ function print_contents()
 
 function mb_basename($path)
 {
-    return end(explode('/',$path));
+    $v = explode('/',$path);
+    return end($v);
 } 
 
 function utf2euc($str)
