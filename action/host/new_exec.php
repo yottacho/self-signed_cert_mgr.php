@@ -155,7 +155,7 @@ function print_contents()
     $openssl_cert_config = array(
         '[ req ]',
         'default_bits            = 2048',
-        'default_md              = sha1',
+        'default_md              = sha256',
         'default_keyfile         = '.$CERT_DATA.'/rootca/'.$rootCaInfo['privKeyFile'],
         'distinguished_name      = req_distinguished_name',
         'extensions              = v3_user',
@@ -252,7 +252,7 @@ function print_contents()
     // --------------------------------------------------------------------- //
     // 인증서요청정보 생성(csr)
     // --------------------------------------------------------------------- //
-    $csr_req_exec = $OPENSSL_EXEC.' req -batch -new -key "'.$dir_cert.'/'.$certmgr_ref['privKeyFile'].'" '.
+    $csr_req_exec = $OPENSSL_EXEC.' req -batch -new -sha256 -key "'.$dir_cert.'/'.$certmgr_ref['privKeyFile'].'" '.
         '-passin "file:'.$file_cert_encpw.'" -out "'.$dir_cert.'/'.$certmgr_ref['csrFile'].'" '.
         '-config "'.$file_openssl_conf.'"';
 
@@ -270,7 +270,7 @@ function print_contents()
     // --------------------------------------------------------------------- //
     // 인증서 생성
     // --------------------------------------------------------------------- //
-    $x509_exec = $OPENSSL_EXEC.' x509 -req -days '.$certmgr_ref['days'].' -extensions v3_user '.
+    $x509_exec = $OPENSSL_EXEC.' x509 -req -days '.$certmgr_ref['days'].' -sha256 -extensions v3_user '.
         '-in "'.$dir_cert.'/'.$certmgr_ref['csrFile'].'" '.
         '-CA "'.$CERT_DATA.'/rootca/'.$rootCaInfo['crtFile'].'" -CAcreateserial '.
         '-CAkey "'.$CERT_DATA.'/rootca/'.$rootCaInfo['privKeyFile'].'" '.
