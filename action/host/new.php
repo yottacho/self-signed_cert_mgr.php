@@ -132,6 +132,11 @@ function print_contents()
         </div>
         </form>
         <div class="box-footer">
+            <div class="col-sm-12">
+                유의: IP로 발급할 경우 DNS에도 IP를 중복해서 입력해야 Internet Explorer에서 인증서 검증 오류가 발생하지 않습니다.<br>
+                (Internet Explorer는 표준 준수가 미흡하여 IP필드를 인식하지 못하고 DNS필드만 인식하므로 DNS필드에 IP가 있어야 하고,
+                다른 브라우저는 정상적으로 IP필드만 인식하므로 IP 인증서는 IP필드와 DNS필드에 중복해서 IP를 입력해야 호환성 오류가 발생하지 않습니다.)
+            </div>
             <div class="col-sm-6">
                 <button id="id_view_cert" class="btn btn-success hide">
                     <i class="fa fa-lock"></i> 인증서 확인 및 다운로드

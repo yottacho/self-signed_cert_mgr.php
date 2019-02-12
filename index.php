@@ -12,6 +12,8 @@ $USER_STORE = $CERT_DATA."/users.json"; // 사용자 로그인 정보를 저장�
 
 $REQUEST_ACTION = isset($_REQUEST['a']) ? $_REQUEST['a'] : "";   // 액션 수행값
 
+$CERTMGR_VERSION = "0.5.0";
+
 /****************************************************************************/
 /* 시작전 체크                                                              */
 /****************************************************************************/
@@ -380,7 +382,7 @@ if ($_SESSION['user_role'] == "admin")
 
   <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Version</b> 0.1.0a
+      <b>Version</b> <?=$CERTMGR_VERSION ?>
     </div>
     <strong>Copyright &copy; 2018 yotta.</strong> All rights reserved.
   </footer>
