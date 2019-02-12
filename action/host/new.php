@@ -160,6 +160,7 @@ function print_contents()
 
 function footer_scripts()
 {
+    global $BASE_URL;
 ?>
 
 <script src="certmgr_common.js"></script>
@@ -210,7 +211,7 @@ function footer_scripts()
         // click on button submit
         $("#id_view_cert").on('click', function()
         {
-            location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=host_view&n=" + $("#certificateName").prop("value");
+            location.href="<?=$BASE_URL?>?a=host_view&n=" + $("#certificateName").prop("value");
         })
 
     });

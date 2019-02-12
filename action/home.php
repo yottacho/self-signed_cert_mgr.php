@@ -19,6 +19,17 @@ function print_contents()
           사설망 시스템을 위한 SSL(https) 인증서를 관리합니다.
         </div>
       </div>
+
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">인증서 마스터 패스워드 조회</h3>
+        </div>
+        <div class="box-body">
+            인증서 마스터 패스워드: <br>
+            루트인증서 패스워드:
+        </div>
+    </div>
+
 <!--
       <div class="box">
         <div class="box-header with-border">

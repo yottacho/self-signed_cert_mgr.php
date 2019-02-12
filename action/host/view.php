@@ -12,6 +12,7 @@ function print_contents()
 {
     global $_REQUEST;
     global $CERT_DATA;
+    global $BASE_URL;
 
     $certName = $_REQUEST['n'];
 
@@ -233,7 +234,7 @@ function print_contents()
 
 function footer_scripts()
 {
-    global $_SERVER;
+    global $BASE_URL;
 ?>
 <script src="certmgr_common.js"></script>
 <script>
@@ -364,7 +365,7 @@ function footer_scripts()
                         $("#pkcs_pw").prop("value", "");
                         $("#pkcs_pw2").prop("value", "");
 
-                        location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=dn&n=" + name + "&f=" + result.pkcs12_file;
+                        location.href="<?=$BASE_URL?>?a=dn&n=" + name + "&f=" + result.pkcs12_file;
                     },
                     function(err)
                     {
@@ -389,26 +390,26 @@ function footer_scripts()
         // click on button submit
         $("#id_private_key_download").on('click', function()
         {
-            location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=dn&n=" + name + "&f=" + privateKey;
+            location.href="<?=$BASE_URL?>?a=dn&n=" + name + "&f=" + privateKey;
         });
         $("#id_crt_download").on('click', function()
         {
-            location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=dn&n=" + name + "&f=" + crtFile;
+            location.href="<?=$BASE_URL?>?a=dn&n=" + name + "&f=" + crtFile;
         });
 
         $("#id_root_crt_download").on('click', function()
         {
-            location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=dn&n=rootca&f=" + rootCrtFile;
+            location.href="<?=$BASE_URL?>?a=dn&n=rootca&f=" + rootCrtFile;
         });
 
         $("#id_csr_download").on('click', function()
         {
-            location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=dn&n=" + name + "&f=" + csrFile;
+            location.href="<?=$BASE_URL?>?a=dn&n=" + name + "&f=" + csrFile;
         });
 
         $("#id_back_list").on('click', function()
         {
-            location.href = "<?=$_SERVER['SCRIPT_NAME']?>?a=host";
+            location.href = "<?=$BASE_URL?>?a=host";
         });
 
     });

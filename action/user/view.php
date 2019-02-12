@@ -12,6 +12,7 @@ function print_contents()
 {
     global $_REQUEST, $_SESSION;
     global $USER_STORE;
+    global $BASE_URL;
 
     $user_id = isset($_REQUEST['n']) ? $_REQUEST['n'] : "";
 
@@ -206,7 +207,7 @@ function print_contents()
 
 function footer_scripts()
 {
-    global $_SERVER;
+    global $BASE_URL;
 ?>
 <script src="certmgr_common.js"></script>
 <script>
@@ -300,7 +301,7 @@ function footer_scripts()
 
         $("#id_back_list").on('click', function()
         {
-            location.href = "<?=$_SERVER['SCRIPT_NAME']?>?a=user";
+            location.href = "<?=$BASE_URL?>?a=user";
         })
 
     });

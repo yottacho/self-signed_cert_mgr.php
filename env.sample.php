@@ -11,4 +11,7 @@ $TIMEZONE = "Asia/Seoul";
 
 $PROGRAM_NAME = "Certificate manager";
 
+// 브라우저 접속 경로
+$BASE_URL = $_SERVER['SCRIPT_NAME'];
+
 ?>

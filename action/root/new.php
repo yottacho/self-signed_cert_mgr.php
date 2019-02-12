@@ -15,6 +15,7 @@ function print_contents()
     global $_SESSION;
     global $CERT_DATA;
     global $is_rootca;
+    global $BASE_URL;
 
     if ($_SESSION['user_role'] != "admin")
     {
@@ -149,6 +150,7 @@ function print_contents()
 function footer_scripts()
 {
     global $is_rootca;
+    global $BASE_URL;
 
     if ($is_rootca == true)
     {
@@ -165,7 +167,7 @@ function footer_scripts()
         // click on button submit
         $("#id_view_cert").on('click', function()
         {
-            location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=root";
+            location.href="<?=$BASE_URL?>?a=root";
         })
     });
 </script>
@@ -221,7 +223,7 @@ function footer_scripts()
         // click on button submit
         $("#id_view_cert").on('click', function()
         {
-            location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=root";
+            location.href="<?=$BASE_URL?>?a=root";
         })
     });
 

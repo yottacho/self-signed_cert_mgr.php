@@ -174,8 +174,8 @@ else
 
 function show_login_page($login_error_yn, $msg = "")
 {
-    global $_SERVER;
     global $PROGRAM_NAME;
+    global $BASE_URL;
 
     $login_error_msg = "";
     $login_error_class = "";
@@ -229,7 +229,7 @@ function show_login_page($login_error_yn, $msg = "")
   <div class="login-box-body">
     <p class="login-box-msg">로그인</p>
 
-    <form action="<?=$_SERVER['SCRIPT_NAME']?>" method="post">
+    <form action="<?=$BASE_URL?>" method="post">
       <input type="hidden" name="a" value="login">
       <div class="form-group <?=$login_error_class?>">
         <div class="form-group has-feedback">

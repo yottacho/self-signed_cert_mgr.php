@@ -184,7 +184,7 @@ foreach ($sidebar_treemenu as $menu_name)
 <div class="wrapper">
   <header class="main-header">
     <!-- Logo -->
-    <a href="<?=$_SERVER['SCRIPT_NAME']?>?a=home" class="logo">
+    <a href="<?=$BASE_URL?>?a=home" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>C</b>M</span>
       <!-- logo for regular state and mobile devices -->
@@ -240,10 +240,10 @@ foreach ($sidebar_treemenu as $menu_name)
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <a href="<?=$_SERVER['SCRIPT_NAME']?>?a=user_view" class="btn btn-default btn-flat">Profile</a>
+                  <a href="<?=$BASE_URL?>?a=user_view" class="btn btn-default btn-flat">Profile</a>
                 </div>
                 <div class="pull-right">
-                  <a href="<?=$_SERVER['SCRIPT_NAME']?>?a=logout" class="btn btn-default btn-flat">Sign out</a>
+                  <a href="<?=$BASE_URL?>?a=logout" class="btn btn-default btn-flat">Sign out</a>
                 </div>
               </li>
             </ul>
@@ -275,7 +275,7 @@ foreach ($sidebar_treemenu as $menu_name)
         <li class="header">MAIN MENU</li>
 
         <li id="id_menu_home">
-          <a href="<?=$_SERVER['SCRIPT_NAME']?>?a=home">
+          <a href="<?=$BASE_URL?>?a=home">
             <i class="glyphicon glyphicon-home"></i> <span>Home</span>
           </a>
         </li>
@@ -288,13 +288,13 @@ foreach ($sidebar_treemenu as $menu_name)
             </span>
           </a>
           <ul class="treeview-menu">
-            <li id="id_menu_host"><a href="<?=$_SERVER['SCRIPT_NAME']?>?a=host"><i class="fa fa-circle-o"></i> 호스트 인증서 목록</a></li>
+            <li id="id_menu_host"><a href="<?=$BASE_URL?>?a=host"><i class="fa fa-circle-o"></i> 호스트 인증서 목록</a></li>
 <?php
 if ($_SESSION['user_role'] == "host_manager")
 {
 ?>
 
-            <li id="id_menu_host_new"><a href="<?=$_SERVER['SCRIPT_NAME']?>?a=host_new"><i class="fa fa-circle-o"></i> 호스트 인증서 생성</a></li>
+            <li id="id_menu_host_new"><a href="<?=$BASE_URL?>?a=host_new"><i class="fa fa-circle-o"></i> 호스트 인증서 생성</a></li>
 <?php
 }
 ?>
@@ -314,10 +314,10 @@ if ($_SESSION['user_role'] == "admin")
             </span>
           </a>
           <ul class="treeview-menu">
-            <li id="id_menu_root"><a href="<?=$_SERVER['SCRIPT_NAME']?>?a=root"><i class="fa fa-circle-o"></i> 루트 인증서 조회</a></li>
-            <li id="id_menu_root_new"><a href="<?=$_SERVER['SCRIPT_NAME']?>?a=root_new"><i class="fa fa-circle-o"></i> 루트 인증서 생성</a></li>
+            <li id="id_menu_root"><a href="<?=$BASE_URL?>?a=root"><i class="fa fa-circle-o"></i> 루트 인증서 조회</a></li>
+            <li id="id_menu_root_new"><a href="<?=$BASE_URL?>?a=root_new"><i class="fa fa-circle-o"></i> 루트 인증서 생성</a></li>
 <!--
-            <li id="id_menu_root_close"><a href="<?=$_SERVER['SCRIPT_NAME']?>?a=root_close"><i class="fa fa-circle-o"></i> Close Root Certificate</a></li>
+            <li id="id_menu_root_close"><a href="<?=$BASE_URL?>?a=root_close"><i class="fa fa-circle-o"></i> Close Root Certificate</a></li>
 -->
           </ul>
         </li>
@@ -336,8 +336,8 @@ if ($_SESSION['user_role'] == "admin")
             </span>
           </a>
           <ul class="treeview-menu">
-            <li id="id_menu_user"><a href="<?=$_SERVER['SCRIPT_NAME']?>?a=user"><i class="fa fa-circle-o"></i> 사용자 목록</a></li>
-            <li id="id_menu_user_new"><a href="<?=$_SERVER['SCRIPT_NAME']?>?a=user_new"><i class="fa fa-circle-o"></i> 사용자 등록</a></li>
+            <li id="id_menu_user"><a href="<?=$BASE_URL?>?a=user"><i class="fa fa-circle-o"></i> 사용자 목록</a></li>
+            <li id="id_menu_user_new"><a href="<?=$BASE_URL?>?a=user_new"><i class="fa fa-circle-o"></i> 사용자 등록</a></li>
           </ul>
         </li>
 <?php
@@ -360,7 +360,7 @@ if ($_SESSION['user_role'] == "admin")
         <small><?=$PAGE_DESC?></small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="<?=$_SERVER['SCRIPT_NAME']?>?a=home"><i class="glyphicon glyphicon-home"></i> Home</a></li>
+        <li><a href="<?=$BASE_URL?>?a=home"><i class="glyphicon glyphicon-home"></i> Home</a></li>
         <!--
         <li><a href="#">Examples</a></li>
         -->

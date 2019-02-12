@@ -12,6 +12,7 @@ function print_contents()
 {
     global $_SESSION;
     global $CERT_DATA;
+    global $BASE_URL;
 
     if ($_SESSION['user_role'] != "admin")
     {
@@ -121,6 +122,7 @@ function print_contents()
 
 function footer_scripts()
 {
+    global $BASE_URL;
 ?>
 <script src="certmgr_common.js"></script>
 <script>
@@ -130,15 +132,15 @@ function footer_scripts()
         // click on button submit
         $("#id_private_key_download").on('click', function()
         {
-            location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=dn&n=" + name + "&f=" + privateKey;
+            location.href="<?=$BASE_URL?>?a=dn&n=" + name + "&f=" + privateKey;
         })
         $("#id_crt_download").on('click', function()
         {
-            location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=dn&n=" + name + "&f=" + crtFile;
+            location.href="<?=$BASE_URL?>?a=dn&n=" + name + "&f=" + crtFile;
         })
         $("#id_csr_download").on('click', function()
         {
-            location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=dn&n=" + name + "&f=" + csrFile;
+            location.href="<?=$BASE_URL?>?a=dn&n=" + name + "&f=" + csrFile;
         })
 
     });

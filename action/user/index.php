@@ -11,6 +11,7 @@ $PAGE_DESC = "사용자 목록 조회";
 function print_contents()
 {
     global $_SESSION;
+    global $BASE_URL;
 
     if ($_SESSION['user_role'] != "admin")
     {
@@ -68,6 +69,7 @@ function print_contents()
 
 function footer_scripts()
 {
+    global $BASE_URL;
 ?>
 <!-- DataTables -->
 <script src="css/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
@@ -119,7 +121,7 @@ function footer_scripts()
 
         //console.log(table.row('.label-primary').data());
 
-        location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=user_view&n=" + rowData.user_id;
+        location.href="<?=$BASE_URL?>?a=user_view&n=" + rowData.user_id;
     });
 
     /* $("#host_cert_load").hide() */

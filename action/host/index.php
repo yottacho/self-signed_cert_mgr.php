@@ -67,6 +67,7 @@ function print_contents()
 
 function footer_scripts()
 {
+    global $BASE_URL;
 ?>
 <!-- DataTables -->
 <script src="css/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
@@ -132,7 +133,7 @@ function footer_scripts()
 
         //console.log(table.row('.label-primary').data());
 
-        location.href="<?=$_SERVER['SCRIPT_NAME']?>?a=host_view&n=" + rowData.name;
+        location.href="<?=$BASE_URL?>?a=host_view&n=" + rowData.name;
     });
 
     /* $("#host_cert_load").hide() */
