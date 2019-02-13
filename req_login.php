@@ -141,11 +141,11 @@ if (!isset($_SESSION['user_id']))
         // 새로고침 했을때 로그인 데이터를 재전송하지 않도록 리다이렉트 처리
         if ($_SESSION['pw_expired'] != "Y")
         {
-            header("Location: ".$_SERVER["SCRIPT_NAME"]."?a=home");
+            header("Location: ".$BASE_URL."?a=home");
         }
         else
         {
-            header("Location: ".$_SERVER["SCRIPT_NAME"]."?a=user_view");
+            header("Location: ".$BASE_URL."?a=user_view");
         }
         exit;
     }
@@ -165,7 +165,7 @@ else
     {
         if ($REQUEST_ACTION != "logout" && $REQUEST_ACTION != "user_view" && $REQUEST_ACTION != "user_view_exec")
         {
-            header("Location: ".$_SERVER["SCRIPT_NAME"]."?a=user_view");
+            header("Location: ".$BASE_URL."?a=user_view");
             exit;
         }
     }
