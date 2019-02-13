@@ -77,7 +77,7 @@ function footer_scripts()
   {
     var table = $('#host_cert').DataTable({
         ajax: {
-            url: '<?=$_SERVER["SCRIPT_NAME"]?>?a=host_list',
+            url: '<?=$BASE_URL?>?a=host_list',
             dataSrc: 'list'
         },
         columns: [
