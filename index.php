@@ -62,7 +62,7 @@ if ($REQUEST_ACTION == "home" || $REQUEST_ACTION == "dn")
 else if ($REQUEST_ACTION == "logout")
 {
     session_destroy();
-    header("Location: ".$_SERVER["SCRIPT_NAME"]);
+    header("Location: ".$BASE_URL);
     exit;
 }
 else if ($REQUEST_ACTION == "error")
