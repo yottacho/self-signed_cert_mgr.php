@@ -25,8 +25,20 @@ function print_contents()
             <h3 class="box-title">인증서 마스터 패스워드 조회</h3>
         </div>
         <div class="box-body">
-            인증서 마스터 패스워드: <br>
-            루트인증서 패스워드:
+            <div class="box box-solid">
+                <button id="id_show_password" class="btn btn-block btn-default btn-sm">조회</button>
+            </div>
+
+            <div id="show_master_pw" class="list-group">
+                <div class="list-group-item col-sm-4">마스터 패스워드</div>
+                <div id="master_pw" class="list-group-item col-sm-8">&nbsp;</div>
+            </div>
+
+            <div id="show_rootca_pw" class="list-group">
+                <div class="list-group-item col-sm-4">루트인증서 패스워드</div>
+                <div id="rootca_pw" class="list-group-item col-sm-8">&nbsp;</div>
+            </div>
+
         </div>
     </div>
 
@@ -63,6 +75,45 @@ function print_contents()
         </div>
       </div>
 -->
+<?php
+}
+
+function footer_scripts()
+{
+    global $BASE_URL;
+?>
+<script src="certmgr_common.js"></script>
+<script>
+    $(document).ready(function() {
+        // click on button submit
+        $("#id_show_password").on('click', function () {
+            ajax_send('form',
+                '<?=$BASE_URL?>?a=cert_password',
+                function (result) {
+                    //alert('success function ' + result);
+                    //console.log(result);
+
+                    $("#master_pw").empty().append(result.master_password);
+                    $("#rootca_pw").empty().append(result.rootca_password);
+
+                    // 인증서 링크를 활성화하고 다운로드한다.
+                    //$("#id_view_cert").removeClass("hide");
+                    //$("#cert_result_log").removeClass("hide");
+
+                },
+                function (err) {
+                    // json object only
+                    if (err == null)
+                        return;
+
+                    //alert('error function');
+                    //console.log(err);
+                }
+            );
+        })
+    });
+</script>
+
 <?php
 }
 ?>

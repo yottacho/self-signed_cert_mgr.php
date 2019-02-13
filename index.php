@@ -55,7 +55,7 @@ require_once("req_login.php");
 /****************************************************************************/
 /* 액션 핸들러                                                              */
 /****************************************************************************/
-if ($REQUEST_ACTION == "home" || $REQUEST_ACTION == "dn")
+if ($REQUEST_ACTION == "home" || $REQUEST_ACTION == "dn" || $REQUEST_ACTION == "cert_password")
 {
     require_once("action/".$REQUEST_ACTION.".php");
 }
