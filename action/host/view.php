@@ -256,7 +256,7 @@ function footer_scripts()
             else
             {
                 ajax_send('form',
-                    '<?=$_SERVER["SCRIPT_NAME"]?>',
+                    '<?=$BASE_URL?>',
                     function(result)
                     {
                         //alert('success function ' + result);
@@ -306,7 +306,7 @@ function footer_scripts()
             $("#user_pw").prop("value", "");
 
             ajax_send('form',
-                '<?=$_SERVER["SCRIPT_NAME"]?>',
+                '<?=$BASE_URL?>',
                 function(result)
                 {
                     //alert('success function ' + result);
@@ -354,7 +354,7 @@ function footer_scripts()
             else
             {
                 ajax_send('form2',
-                    '<?=$_SERVER["SCRIPT_NAME"]?>',
+                    '<?=$BASE_URL?>',
                     function(result)
                     {
                         //alert('success function ' + result);
