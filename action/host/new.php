@@ -176,7 +176,7 @@ function footer_scripts()
         $("#submit").on('click', function()
         {
             ajax_send('form',
-                '<?=$_SERVER["SCRIPT_NAME"]?>',
+                '<?=$BASE_URL?>',
                 function(result)
                 {
                     //alert('success function ' + result);
