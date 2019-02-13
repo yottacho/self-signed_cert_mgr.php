@@ -79,7 +79,7 @@ function footer_scripts()
   {
     var table = $('#user_list').DataTable({
         ajax: {
-            url: '<?=$_SERVER["SCRIPT_NAME"]?>?a=user_list',
+            url: '<?=$BASE_URL?>?a=user_list',
             dataSrc: 'list'
         },
         columns: [
