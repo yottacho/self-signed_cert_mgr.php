@@ -221,7 +221,7 @@ function footer_scripts()
             $("#func").prop("value", "modify");
 
             ajax_send('form',
-                '<?=$_SERVER["SCRIPT_NAME"]?>',
+                '<?=$BASE_URL?>',
                 function(result)
                 {
                     //alert('success function ' + result);
@@ -266,7 +266,7 @@ function footer_scripts()
             else
             {
                 ajax_send('form',
-                    '<?=$_SERVER["SCRIPT_NAME"]?>',
+                    '<?=$BASE_URL?>',
                     function(result)
                     {
                         //alert('success function ' + result);
