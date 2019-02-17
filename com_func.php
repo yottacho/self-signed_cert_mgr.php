@@ -139,6 +139,11 @@ function get_ca_master_password($type = "master_pw")
         return false;
     }
 
+    if ($master_pw[$type] == "")
+    {
+        return false;
+    }
+
     return decrypt($master_pw[$type]);
 }
 

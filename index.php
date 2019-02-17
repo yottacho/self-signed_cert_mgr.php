@@ -12,7 +12,7 @@ $USER_STORE = $CERT_DATA."/users.json"; // 사용자 로그인 정보를 저장�
 
 $REQUEST_ACTION = isset($_REQUEST['a']) ? $_REQUEST['a'] : "";   // 액션 수행값
 
-$CERTMGR_VERSION = "0.5.0";
+$CERTMGR_VERSION = "0.9.0";
 
 /****************************************************************************/
 /* 시작전 체크                                                              */
@@ -55,7 +55,7 @@ require_once("req_login.php");
 /****************************************************************************/
 /* 액션 핸들러                                                              */
 /****************************************************************************/
-if ($REQUEST_ACTION == "home" || $REQUEST_ACTION == "dn" || $REQUEST_ACTION == "cert_password")
+if ($REQUEST_ACTION == "home" || $REQUEST_ACTION == "dn")
 {
     require_once("action/".$REQUEST_ACTION.".php");
 }
@@ -135,7 +135,7 @@ if ($PAGE_TITLE == "")
 }
 
 // 트리메뉴 열기
-$sidebar_treemenu = array('host','root','user');
+$sidebar_treemenu = array('host','root','user','passwd');
 
 $sidebar_menu_active = "    \$('#id_menu_".$REQUEST_ACTION."').addClass('active')\n";
 foreach ($sidebar_treemenu as $menu_name)
@@ -307,7 +307,6 @@ if ($_SESSION['user_role'] == "host_manager")
 if ($_SESSION['user_role'] == "admin")
 {
 ?>
-
         <li id="id_menu_tree_root" class="treeview">
           <a href="#">
             <i class="fa fa-shield"></i> <span>루트 인증서 관리</span>
@@ -323,6 +322,23 @@ if ($_SESSION['user_role'] == "admin")
 -->
           </ul>
         </li>
+<?php
+}
+
+if ($_SESSION['user_role'] != "guest")
+{
+?>
+    <li id="id_menu_tree_passwd" class="treeview">
+        <a href="#">
+            <i class="fa fa-shield"></i> <span>인증서 패스워드 관리</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+        </a>
+        <ul class="treeview-menu">
+            <li id="id_menu_passwd"><a href="<?=$BASE_URL?>?a=passwd"><i class="fa fa-circle-o"></i> 인증서 패스워드 조회</a></li>
+        </ul>
+    </li>
 
 <?php
 }

@@ -31,8 +31,19 @@ function print_contents()
         루트 인증서가 없습니다. 루트 인증서를 발급 후 호스트 인증서를 발급하세요.
       </div>
 <?php
+        return;
     }
 
+    if (get_ca_master_password() === false)
+    {
+?>
+        <div class="alert alert-danger alert-dismissible">
+            <h4><i class="icon fa fa-ban"></i> Alert!</h4>
+            인증서 암호가 설정되지 않았습니다.
+        </div>
+<?php
+        return;
+    }
 ?>
       <div class="box">
         <div class="box-header with-border">
