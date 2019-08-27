@@ -13,7 +13,7 @@ function print_contents()
     global $_POST, $_SESSION;
     global $USER_STORE, $CRYPT_RSALT;
 
-    $user_id = isset($_REQUEST['n']) ? $_REQUEST['n'] : "";
+    $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : "";
 
     if (!input_value_check($user_id, '^[a-zA-Z0-9_]*$', 0, 12))
     {
